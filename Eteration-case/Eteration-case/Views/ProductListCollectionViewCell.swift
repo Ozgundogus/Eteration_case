@@ -8,8 +8,8 @@ import UIKit
 
 class ProductListCollectionViewCell: UICollectionViewCell {
     static let identifier = "ProductListCollectionViewCell"
-    
-    var addToCartAction: (() -> Void)?
+    var product: ProductModel?
+    var addToCartAction: ((_ product: ProductModel) -> Void)?
     
     private let imageView: UIImageView = {
         let imageView = UIImageView()
@@ -89,6 +89,8 @@ class ProductListCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(with product: ProductModel) {
+        //burası
+        self.product = product
         nameLabel.text = product.name
         priceLabel.text = "\(product.price) ₺"
         if let imageUrl = URL(string: product.image ?? "") {
@@ -114,7 +116,7 @@ class ProductListCollectionViewCell: UICollectionViewCell {
     }
     
     @objc func addToCartPressed() {
-        addToCartAction?()
+        addToCartAction?(product!)
         print("Add to Cart button pressed.")
     }
 }

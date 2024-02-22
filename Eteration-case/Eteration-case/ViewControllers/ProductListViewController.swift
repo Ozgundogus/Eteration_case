@@ -110,7 +110,7 @@ class ProductListViewController: UIViewController, UICollectionViewDelegate, UIC
         }
         let product = filteredProducts[indexPath.row]
         cell.configure(with: product)
-        cell.addToCartAction = { [weak self] in
+        cell.addToCartAction = { [weak self] product in
             self?.addToCartButtonTapped(product)
         }
         return cell
@@ -123,8 +123,6 @@ class ProductListViewController: UIViewController, UICollectionViewDelegate, UIC
         detailViewController.product = product
         navigationController?.pushViewController(detailViewController, animated: true)
     }
-
-
  
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -136,7 +134,7 @@ class ProductListViewController: UIViewController, UICollectionViewDelegate, UIC
         }
     }
     func addToCartButtonTapped(_ product: ProductModel) {
-        CoreDataManager.shared.addToCart(name: product.name, price: product.price, quantity: 1)
+        CoreDataManager.shared.addToCart(product: product, quantity: 1)
         print("Added to cart: \(product.name)")
         NotificationCenter.default.post(name: NSNotification.Name("CartUpdated"), object: nil)
     }

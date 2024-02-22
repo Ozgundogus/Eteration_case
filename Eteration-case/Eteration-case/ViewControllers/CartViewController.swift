@@ -15,9 +15,11 @@ class CartViewController: UIViewController, UICollectionViewDelegate, UICollecti
     var cartItems: [CartItemViewModel] = []
 
     override func viewDidLoad() {
+        
         super.viewDidLoad()
         setupCollectionView()
         loadCartItems()
+        self.view.backgroundColor = .white
         NotificationCenter.default.addObserver(self, selector: #selector(loadCartItems), name: NSNotification.Name("CartUpdated"), object: nil)
 
     }
@@ -92,30 +94,35 @@ class CartViewController: UIViewController, UICollectionViewDelegate, UICollecti
             fatalError("Unable to dequeue CartItemCollectionViewCell")
         }
         
+        
         let item = cartItems[indexPath.row]
         cell.configure(with: item)
-      
-        cell.onMinusTapped = { [weak self] in
+        
+        cell.onMinusTapped = { [weak self] product in
             guard let self = self else { return }
-
+            
             if indexPath.row < self.cartItems.count {
-                let item = self.cartItems[indexPath.row]
 
-                if item.quantity > 1 {
-                    item.decreaseQuantity()
-                    self.updateCart(item: item)
-                    self.collectionView?.performBatchUpdates {
+                if let item = cartItems.first(where: { $0.product.name == product.name }) {
+                    if item.quantity > 1 {
+                        
+                        item.decreaseQuantity()
+                        self.updateCart(item: item)
+                        self.collectionView?.performBatchUpdates {
                         self.collectionView?.reloadItems(at: [indexPath])
+                        }
+                    } else {
+                        self.removeFromCart(item: item, at: indexPath)
+                        self.collectionView?.reloadData()
                     }
-                } else {
-                    self.removeFromCart(item: item, at: indexPath)
                 }
             }
+            
+            self.collectionView?.reloadData()
         }
 
-        cell.onPlusTapped = { [weak self] in
+        cell.onPlusTapped = { [weak self] product in
             guard let self = self else { return }
-
             if indexPath.row < self.cartItems.count {
                 let item = self.cartItems[indexPath.row]
                 item.increaseQuantity()
@@ -132,16 +139,13 @@ class CartViewController: UIViewController, UICollectionViewDelegate, UICollecti
 
     
     private func updateCart(item: CartItemViewModel) {
-        CoreDataManager.shared.updateCartProduct(name: item.product.name, price: item.product.price, quantity: Int16(item.quantity))
+        CoreDataManager.shared.updateCartProduct(product: item.product, quantity: Int16(item.quantity))
     }
     
     
     private func removeFromCart(item: CartItemViewModel, at indexPath: IndexPath) {
             CoreDataManager.shared.removeFromCart(name: item.product.name)
-            cartItems.remove(at: indexPath.row)
-        collectionView?.performBatchUpdates {
-               self.collectionView?.deleteItems(at: [indexPath])
-           }
+            cartItems.removeAll(where: { $0.product.name == item.product.name })
         }
 
     

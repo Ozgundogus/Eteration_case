@@ -37,17 +37,17 @@ class CoreDataManager {
         }
     }
     
-    func addToCart(name: String, price: String, quantity: Int16) {
+    func addToCart(product: ProductModel, quantity: Int16) {
         let cartItem = ProductsCoreData(context: context)
-        cartItem.name = name
-        cartItem.price = price
+        cartItem.name = product.name
+        cartItem.price = product.price
         cartItem.quantity = quantity
         saveContext()
     }
 
-    func updateCartProduct(name: String, price: String, quantity: Int16) {
+    func updateCartProduct(product: ProductModel, quantity: Int16) {
         let fetchRequest: NSFetchRequest<ProductsCoreData> = ProductsCoreData.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "name == %@", name)
+        fetchRequest.predicate = NSPredicate(format: "name == %@", product.name)
         
         do {
             let results = try context.fetch(fetchRequest)
@@ -56,7 +56,7 @@ class CoreDataManager {
                 saveContext()
             } else {
                
-                addToCart(name: name, price: price, quantity: quantity)
+                addToCart(product: product, quantity: quantity)
             }
         } catch {
             print("Update error: \(error)")

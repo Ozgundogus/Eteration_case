@@ -10,9 +10,9 @@ import UIKit
 class CartItemCollectionViewCell: UICollectionViewCell {
     static let identifier = "CartItemCollectionViewCell"
     var cartItemViewModel: CartItemViewModel?
-  
-    var onMinusTapped: (() -> Void)?
-      var onPlusTapped: (() -> Void)?
+    var product : ProductModel?
+    var onMinusTapped: ((_ product:ProductModel) -> Void)?
+    var onPlusTapped: ((_ product:ProductModel) -> Void)?
     
     private let productNameLabel: UILabel = {
         let label = UILabel()
@@ -108,6 +108,7 @@ class CartItemCollectionViewCell: UICollectionViewCell {
 
     public func configure(with cartItemViewModel: CartItemViewModel) {
         self.cartItemViewModel = cartItemViewModel
+        self.product = cartItemViewModel.product
         productNameLabel.text = cartItemViewModel.product.name
         productPriceLabel.text = "\(cartItemViewModel.product.price) ₺"
         
@@ -119,12 +120,12 @@ class CartItemCollectionViewCell: UICollectionViewCell {
     }
 
     
-    @objc private func minusButtonTapped() {
-           onMinusTapped?()
-       }
+   @objc private func minusButtonTapped() {
+        onMinusTapped?(product!)
+   }
 
-       @objc private func plusButtonTapped() {
-           onPlusTapped?()
-       }
+   @objc private func plusButtonTapped() {
+       onPlusTapped?(product!)
+   }
 }
 
